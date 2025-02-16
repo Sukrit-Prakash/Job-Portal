@@ -1,6 +1,6 @@
 // models/job.model.js
 
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 const JobSchema = new Schema(

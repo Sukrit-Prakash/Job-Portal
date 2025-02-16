@@ -1,101 +1,301 @@
-import Image from "next/image";
+// // app/dashboard/page.js
+// 'use client';
 
-export default function Home() {
+// import { useEffect, useState } from 'react';
+// import { useSearchParams, useRouter } from 'next/navigation';
+
+// // MUI Components
+// import {
+//   AppBar,
+//   Toolbar,
+//   IconButton,
+//   Typography,
+//   Box,
+//   Container,
+//   Select,
+//   MenuItem,
+//   FormControl,
+//   InputLabel,
+//   TextField,
+//   Grid,
+//   Card,
+//   CardContent,
+//   CardActions,
+//   Button,
+//   Pagination,
+//   Divider,
+// } from '@mui/material';
+
+// // Icons (MUI or other icons of your choice)
+// import MenuIcon from '@mui/icons-material/Menu';
+
+// // Tailwind is optional for extra styling
+// // e.g. import './dashboard.css';
+
+// export default function DashboardPage() {
+//   // Local state for jobs
+//   const [jobs, setJobs] = useState([]);
+//   const [page, setPage] = useState(1);
+//   const [totalPages, setTotalPages] = useState(1);
+
+//   // Filter states
+//   const [jobType, setJobType] = useState('');
+//   const [location, setLocation] = useState('');
+//   const [minSalary, setMinSalary] = useState('');
+//   const [maxSalary, setMaxSalary] = useState('');
+
+//   // We could read query params from the URL, but let's keep it simple
+//   const router = useRouter();
+
+//   // Fetch jobs from /api/jobs
+//   const fetchJobs = async () => {
+//     try {
+//       const params = new URLSearchParams();
+//       params.set('page', page);
+//       params.set('limit', 6); // or however many per page you want
+
+//       if (jobType) params.set('jobType', jobType);
+//       if (location) params.set('location', location);
+//       if (minSalary) params.set('minSalary', minSalary);
+//       if (maxSalary) params.set('maxSalary', maxSalary);
+
+//       const res = await fetch(`/api/jobs?${params.toString()}`);
+//       const data = await res.json();
+//       if (res.ok) {
+//         setJobs(data.data);
+//         setTotalPages(data.totalPages);
+//       } else {
+//         console.error('Error fetching jobs:', data.error);
+//       }
+//     } catch (err) {
+//       console.error(err);
+//     }
+//   };
+
+//   // Effect to refetch whenever filters or page changes
+//   useEffect(() => {
+//     fetchJobs();
+//   }, [page, jobType, location, minSalary, maxSalary]);
+
+//   // Handlers
+//   const handlePageChange = (event, value) => {
+//     setPage(value);
+//   };
+
+//   const handleJobTypeChange = (event) => {
+//     setJobType(event.target.value);
+//     setPage(1); // reset to page 1 on filter change
+//   };
+
+//   const handleLocationChange = (event) => {
+//     setLocation(event.target.value);
+//     setPage(1);
+//   };
+
+//   const handleMinSalaryChange = (event) => {
+//     setMinSalary(event.target.value);
+//     setPage(1);
+//   };
+
+//   const handleMaxSalaryChange = (event) => {
+//     setMaxSalary(event.target.value);
+//     setPage(1);
+//   };
+
+//   return (
+//     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+//       {/* ======== NAVBAR ======== */}
+//       <AppBar position="static">
+//         <Toolbar>
+//           <IconButton size="large" edge="start" color="inherit" sx={{ mr: 2 }}>
+//             <MenuIcon />
+//           </IconButton>
+//           <Typography variant="h6" component="div">
+//             LuckyJob
+//           </Typography>
+//           {/* Right side: user location, profile avatar, etc. */}
+//           <Box sx={{ ml: 'auto' }} className="hidden sm:block">
+//             <Typography variant="body1">New York, NY</Typography>
+//           </Box>
+//         </Toolbar>
+//       </AppBar>
+
+//       {/* ======== MAIN CONTENT ======== */}
+//       <Container maxWidth="xl" sx={{ mt: 2 }}>
+//         <Grid container spacing={2}>
+//           {/* ======== FILTER SECTION ======== */}
+//           <Grid item xs={12} md={3}>
+//             <Box className="bg-white rounded shadow p-4">
+//               <Typography variant="h6" gutterBottom>
+//                 Filters
+//               </Typography>
+//               <Divider className="my-2" />
+              
+//               {/* Job Type Filter */}
+//               <FormControl fullWidth sx={{ mb: 2 }} size="small">
+//                 <InputLabel>Job Type</InputLabel>
+//                 <Select
+//                   value={jobType}
+//                   label="Job Type"
+//                   onChange={handleJobTypeChange}
+//                 >
+//                   <MenuItem value="">All</MenuItem>
+//                   <MenuItem value="Full Time">Full Time</MenuItem>
+//                   <MenuItem value="Part Time">Part Time</MenuItem>
+//                   <MenuItem value="Internship">Internship</MenuItem>
+//                   <MenuItem value="Contract">Contract</MenuItem>
+//                   <MenuItem value="Remote">Remote</MenuItem>
+//                   <MenuItem value="Freelance">Freelance</MenuItem>
+//                 </Select>
+//               </FormControl>
+
+//               {/* Location Filter */}
+//               <TextField
+//                 label="Location"
+//                 variant="outlined"
+//                 size="small"
+//                 fullWidth
+//                 sx={{ mb: 2 }}
+//                 value={location}
+//                 onChange={handleLocationChange}
+//               />
+
+//               {/* Salary Range */}
+//               <Box className="flex flex-col sm:flex-row gap-2">
+//                 <TextField
+//                   label="Min Salary"
+//                   variant="outlined"
+//                   size="small"
+//                   type="number"
+//                   fullWidth
+//                   value={minSalary}
+//                   onChange={handleMinSalaryChange}
+//                 />
+//                 <TextField
+//                   label="Max Salary"
+//                   variant="outlined"
+//                   size="small"
+//                   type="number"
+//                   fullWidth
+//                   value={maxSalary}
+//                   onChange={handleMaxSalaryChange}
+//                 />
+//               </Box>
+//             </Box>
+//           </Grid>
+
+//           {/* ======== JOBS SECTION ======== */}
+//           <Grid item xs={12} md={9}>
+//             <Typography variant="h5" sx={{ mb: 2 }}>
+//               Recommended jobs ({jobs?.length ?? 0})
+//             </Typography>
+
+//             <Grid container spacing={2}>
+//               {jobs?.map((job) => (
+//                 <Grid item xs={12} sm={6} lg={4} key={job._id}>
+//                   <Card className="shadow hover:shadow-lg transition-all">
+//                     <CardContent>
+//                       <Typography variant="subtitle2" color="text.secondary">
+//                         {new Date(job.posted_date).toLocaleDateString()}
+//                       </Typography>
+//                       <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+//                         {job.title}
+//                       </Typography>
+//                       <Typography variant="body2" color="text.secondary">
+//                         {job.company}
+//                       </Typography>
+//                       <Typography variant="body2">
+//                         {job.location}
+//                       </Typography>
+//                       {/* Possibly tags, job_type, etc. */}
+//                       <Typography variant="body2" sx={{ mt: 1 }}>
+//                         <strong>Type:</strong> {job.job_type}
+//                       </Typography>
+//                       <Typography variant="body2">
+//                         <strong>Salary:</strong> {job.salary ?? 'N/A'}
+//                       </Typography>
+//                     </CardContent>
+//                     <CardActions>
+//                       <Button
+//                         size="small"
+//                         variant="contained"
+//                         color="primary"
+//                         href={job.url}
+//                         target="_blank"
+//                       >
+//                         Details
+//                       </Button>
+//                     </CardActions>
+//                   </Card>
+//                 </Grid>
+//               ))}
+//             </Grid>
+
+//             {/* Pagination */}
+//             {totalPages > 1 && (
+//               <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+//                 <Pagination
+//                   count={totalPages}
+//                   page={page}
+//                   onChange={handlePageChange}
+//                   color="primary"
+//                 />
+//               </Box>
+//             )}
+//           </Grid>
+//         </Grid>
+//       </Container>
+//     </Box>
+//   );
+// }
+
+
+import React from "react";
+import Navbar from "@/components/Navbar";
+import Sidebar from "@/components/Sidebar";
+import JobCard from "@/components/JobCard";
+
+const jobs = [
+  {
+    id: 1,
+    date: "20 May, 2023",
+    company: "Amazon",
+    title: "Senior UI/UX Designer",
+    type: ["Part time", "Senior level", "Distant"],
+    rate: "$250/hr",
+    location: "San Francisco, CA",
+    logo: "/amazon.png",
+    bgColor: "bg-orange-100",
+  },
+  {
+    id: 2,
+    date: "4 Feb, 2023",
+    company: "Google",
+    title: "Junior UI/UX Designer",
+    type: ["Full time", "Junior level", "Distant"],
+    rate: "$150/hr",
+    location: "California, CA",
+    logo: "/google.png",
+    bgColor: "bg-green-100",
+  },
+  // Add more job listings here
+];
+
+export default function Dashboard() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="min-h-screen bg-gray-100 flex flex-col">
+      <Navbar />
+      <div className="flex flex-row p-6">
+        <Sidebar />
+        <div className="flex-1 px-6">
+          <h2 className="text-2xl font-semibold mb-4">Recommended Jobs</h2>
+          <div className="grid grid-cols-3 gap-6">
+            {jobs.map((job) => (
+              <JobCard key={job.id} job={job} />
+            ))}
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
     </div>
   );
 }
