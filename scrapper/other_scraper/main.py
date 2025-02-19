@@ -1,8 +1,11 @@
 from scrapy.crawler import CrawlerProcess
 from spiders.internshala_scraper import InternshalaSpider
+# from spiders.weworkremotely_scraper import WeWorkRemotelySpider
+# from spiders.linkedin_scraper import LinkedInSpider
+# ------------------NOT WORING CURRENTLY-------------------
 # from spiders.naukri_scraper import NaukriSpider
 # from spiders.indeed_scraper import IndeedSpider
-# from spiders.weworkremotely_scraper import JobScraper
+
 import os
 import json
 
@@ -16,8 +19,8 @@ with open("output/jobs.json", "w") as f:
 # Run all spiders
 process = CrawlerProcess()
 
-# process.crawl(NaukriSpider)
-# process.crawl(IndeedSpider)
 process.crawl(InternshalaSpider)
-# process.crawl(JobScraper)
+# process.crawl(WeWorkRemotelySpider)
+# process.crawl(LinkedInSpider)
+
 process.start()

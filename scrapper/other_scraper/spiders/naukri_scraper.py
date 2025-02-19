@@ -7,10 +7,7 @@ class NaukriSpider(scrapy.Spider):
     start_urls = ["https://www.naukri.com/software-engineer-jobs"]
 
     def __init__(self):
-        # Connect to MongoDB
-        # mongodb+srv://sukritprakash2020:Vkhi2fx6WMnu7N8L@cluster0.ztwxu.mongodb.net/
-        # Vkhi2fx6WMnu7N8L
-        # sukritprakash2020
+      
         self.client = pymongo.MongoClient("mongodb://localhost:27017/")  # Update with your DB URL if needed
         self.db = self.client["job_scraper_db"]  # Database name
         self.collection = self.db["naukri_jobs"]  # Collection name

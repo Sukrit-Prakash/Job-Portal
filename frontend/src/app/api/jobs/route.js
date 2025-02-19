@@ -1,70 +1,43 @@
 // app/api/jobs/route.js
-import { connectDB } from '@/utils/db';
-import Job from '@/models/Job';
 
-// Helper to safely parse numeric query params
-function parseNumber(value, defaultValue = 1) {
-  const parsed = parseInt(value, 10);
-  return isNaN(parsed) ? defaultValue : parsed;
-}
+import { NextResponse } from "next/server";
+import connectDB from "@/lib/mongodb";
+import getJobModel from "@/models/Job";
+// import { parse } from "next/dist/build/swc/generated-native";
 
-export async function GET(request) {
+
+const DATABASES = ["linkedin", "weworkremotely", "internshala"];
+
+export async function GET(req){
   try {
     await connectDB();
 
-    // Extract query params
-    const { searchParams } = new URL(request.url);
-    const page = parseNumber(searchParams.get('page'), 1);
-    const limit = parseNumber(searchParams.get('limit'), 6);
+    // const url = new URL(req.url, "http://localhost:3000");
+  
+      const url = new URL(req.url);
+ 
 
-    const jobType = searchParams.get('jobType') || '';
-    const location = searchParams.get('location') || '';
-    const minSalary = parseNumber(searchParams.get('minSalary'), 0);
-    const maxSalary = parseNumber(searchParams.get('maxSalary'), 999999); 
-    // You may adapt how you want to parse salary.
+    // const page = url.searchparams.get("page") || 1;
+    // const page = parseInt(url.searchparams.get("page")) ||1;
+    const page = parseInt(url.searchParams.get("page")) || 1;
 
-    // Build query object
-    const query = {};
-
-    // Filter by jobType if provided
-    if (jobType) {
-      query.job_type = jobType;
-    }
-
-    // Filter by location if provided
-    if (location) {
-      // for partial match, do a regex or just an exact match
-      query.location = { $regex: location, $options: 'i' };
-    }
-
-    // Salary is stored as string, so you'd need a different approach for real numeric filtering.
-    // This is just a dummy approach if you stored numeric salaries or used a numeric range. 
-    // For now let's assume it's numeric in the DB:
-    if (minSalary || maxSalary < 999999) {
-      query.salary = { $gte: minSalary, $lte: maxSalary };
-    }
-
-    // Count total docs for pagination
-    const totalCount = await Job.countDocuments(query);
-
-    // Paginate
-    const jobs = await Job.find(query)
-      .sort({ posted_date: -1 }) // sort by posted_date desc
-      .skip((page - 1) * limit)
-      .limit(limit);
-
-    // Return JSON response
-    return new Response(
-      JSON.stringify({
-        data: jobs,
-        page,
-        totalPages: Math.ceil(totalCount / limit),
-        totalJobs: totalCount,
-      }),
-      { status: 200 }
-    );
+    const limit = parseInt(url.searchParams.get("limit")) || 10;
+    const skip =(page-1)*limit;
+    const joblist =[];
+    for(const database of DATABASES){
+      const job = getJobModel(database);
+      const jobs = await job.find().sort({scrapedAt: -1}).skip(skip).limit(limit);
+      joblist.push(...jobs);
+  }
+  
+  return NextResponse.json(joblist);
   } catch (error) {
     console.error(error);
-    return new Response(JSON.stringify({ error: 'Server Error' }), { status: 500 });
+    return NextResponse.error(new Error("Failed to fetch jobs"));
+    
   }
 }
+
+
+
+

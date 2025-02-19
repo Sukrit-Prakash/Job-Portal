@@ -68,4 +68,34 @@ JobSchema.index({
   skills: "text",
 });
 
-module.exports = mongoose.model("Job", JobSchema);
+
+const getJobModel = (databaseName) => {
+  const db = mongoose.connection.useDb(databaseName);
+  return db.models.Job || db.model("Job", JobSchema, "jobs");
+};
+
+
+// module.exports = mongoose.model("Job", JobSchema);
+
+export default getJobModel;
+
+
+
+
+// const JobSchema = new mongoose.Schema(
+//   {
+//     title: String,
+//     company: String,
+//     location: String,
+//     description: String,
+//     posted_date: String, // Keep as string if scraped as empty
+//     url: String,
+//     tags: [String],
+//     job_type: String,
+//     salary: String,
+//     skills: [String],
+//     scraped_at: Date,
+//   },
+//   { timestamps: true }
+// );
+
